@@ -1,7 +1,7 @@
 """This module containts the abstract class Player."""
 from random import shuffle
 
-from card import Suit, Rank, Deck
+from card import Suit, Rank, Card, Deck
 
 
 class Player:
@@ -55,9 +55,13 @@ class SimplePlayer(Player):
         if verbose:
             deck = Deck()
             deck.cards.sort(key=self.undesirability)
-            print('Card undesirability: ')
+            self.say('Card undesirability: ')
             for card in deck.cards:
-                print('{}: {}'.format(card, self.undesirability(card)))
+                self.say('{}: {}'.format(card, self.undesirability(card)))
+
+    def say(self, message):
+        if self.verbose:
+            print(message)
 
     def undesirability(self, card):
         return (
@@ -77,8 +81,8 @@ class SimplePlayer(Player):
 
         hand.sort(key=self.undesirability, reverse=True)
         if self.verbose:
-            print('Hand: {}'.format(hand))
-            print('Trick so far: {}'.format(trick))
+            self.say('Hand: {}'.format(hand))
+            self.say('Trick so far: {}'.format(trick))
 
         # Safe cards are cards which will not result in winning the trick
         leading_suit = trick[0].suit
@@ -90,13 +94,18 @@ class SimplePlayer(Player):
                       if card.suit != leading_suit or card.rank <= max_rank_in_leading_suit]
 
         if self.verbose:
-            print('Valid cards: {}'.format(valid_cards))
-            print('Safe cards: {}'.format(safe_cards))
+            self.say('Valid cards: {}'.format(valid_cards))
+            self.say('Safe cards: {}'.format(safe_cards))
 
         if safe_cards:
             return safe_cards[0]
         elif valid_cards:
-            return valid_cards[0]
+            queen_of_spades = Card(Suit.spades, Rank.queen)
+            # Don't try to take a trick by laying the queen of spades
+            if valid_cards[0] == queen_of_spades and len(valid_cards) > 1:
+                return valid_cards[1]
+            else:
+                return valid_cards[0]
 
         raise AssertionError(
             'Apparently there is no valid card that can be played. This should not happen.'

@@ -3,10 +3,11 @@ from card import Suit, Rank, Card, Deck
 
 class Game:
 
-    def __init__(self, players):
+    def __init__(self, players, verbose=False):
         """
         players is a list of four players
         """
+        self.verbose = verbose
         if len(players) != 4:
             raise ValueError('There must be four players.')
         self.players = players
@@ -24,6 +25,10 @@ class Game:
 
     def is_trick_valid(self, trick):
         return True  # TODO: implement this
+
+    def say(self, message):
+        if self.verbose:
+            print(message)
 
     def play(self):
         """
@@ -43,9 +48,9 @@ class Game:
             leading_index = self.play_trick(leading_index)
 
         # Print and return the results
-        print('Results:')
+        self.say('Results:')
         for i in range(4):
-            print('Player {}: {} from {}'.format(i,
+            self.say('Player {}: {} from {}'.format(i,
                                                  self.count_points(self._cards_taken[i]),
                                                  ' '.join(str(card) for card in self._cards_taken[i])),
                   )
@@ -65,10 +70,10 @@ class Game:
             self._player_hands[player_index].remove(played_card)
             player_index = (player_index + 1) % 4
 
-        print('Trick: {}'.format(trick))
+        self.say('Trick: {}'.format(trick))
         winning_index = self.winning_index(trick)
         winning_player_index = (leading_index + winning_index) % 4
-        print('Winning player: {}'.format(winning_player_index))
+        self.say('Winning player: {}'.format(winning_player_index))
         self._cards_taken[winning_player_index].extend(trick)
         return winning_player_index
 
