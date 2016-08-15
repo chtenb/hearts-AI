@@ -1,10 +1,14 @@
-"""This module containts the abstract class Player."""
+"""This module containts the abstract class Player and some implementations."""
 from random import shuffle
 
 from card import Suit, Rank, Card, Deck
 
 
 class Player:
+
+    """
+    Abstract class defining the interface of a Computer Player.
+    """
 
     def pass_cards(self, hand):
         """Must return a list of three cards from the given hand."""
@@ -29,6 +33,11 @@ class Player:
 
 
 class StupidPlayer(Player):
+
+    """
+    Most simple player you can think of.
+    It just plays random valid cards.
+    """
 
     def pass_cards(self, hand):
         return hand[:3]

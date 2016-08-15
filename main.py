@@ -1,15 +1,14 @@
 from game import Game
 from player import StupidPlayer, SimplePlayer
 
-# SimplePlayer()
 
-# players = [StupidPlayer(), StupidPlayer(), StupidPlayer(), StupidPlayer()]
-# players = [SimplePlayer(), SimplePlayer(), StupidPlayer(), StupidPlayer()]
+# These four players are playing the game
 players = [SimplePlayer(), SimplePlayer(), SimplePlayer(), SimplePlayer()]
-scores = (0, 0, 0, 0)
 
-for _ in range(1000):
-    print(_)
+# We are simulating n games accumulating a total score
+scores = (0, 0, 0, 0)
+for game_nr in range(1000):
+    print('Game {}'.format(game_nr))
     game = Game(players)
     scores = tuple(sum(x) for x in zip(scores, game.play()))
 

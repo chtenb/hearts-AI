@@ -17,26 +17,36 @@ class Game:
         self._player_hands = tuple(deck.deal())
         self._cards_taken = ([], [], [], [])
 
+    def say(self, message):
+        if self.verbose:
+            print(message)
+
     def are_hearts_broken(self):
+        """
+        Return True if the hearts are broken yet, otherwise return False.
+        """
         for cards in self._cards_taken:
             if any(card.suit == Suit.hearts for card in cards):
                 return True
         return False
 
     def is_trick_valid(self, trick):
-        return True  # TODO: implement this
-
-    def say(self, message):
-        if self.verbose:
-            print(message)
+        """
+        Return True if the given trick is a valid trick according to the rules of the game.
+        Return False otherwise.
+        """
+        # TODO: implement this
+        return True
 
     def play(self):
         """
-        Simulate a game and return a 4-tuple of the scores.
+        Simulate a single game and return a 4-tuple of the scores.
         """
-        # Players and their hands are indentified by indices ranging from 0 to 4
+        # Players and their hands are indentified by indices ranging from 0 till 4
 
-        # Perform the card passing
+        # Perform the card passing.
+        # Currently always passes in one direction.
+        # Alternating directions can be implemented later if desirable
         for i in range(4):
             for card in self.players[i].pass_cards(self._player_hands[i]):
                 self._player_hands[i].remove(card)
@@ -50,14 +60,19 @@ class Game:
         # Print and return the results
         self.say('Results:')
         for i in range(4):
-            self.say('Player {}: {} from {}'.format(i,
-                                                 self.count_points(self._cards_taken[i]),
-                                                 ' '.join(str(card) for card in self._cards_taken[i])),
-                  )
+            self.say('Player {}: {} from {}'
+                     .format(i,
+                             self.count_points(self._cards_taken[i]),
+                             ' '.join(str(card) for card in self._cards_taken[i])),
+                     )
 
         return tuple(self.count_points(self._cards_taken[i]) for i in range(4))
 
     def play_trick(self, leading_index):
+        """
+        Simulate a single trick.
+        leading_index contains the index of the player that must begin.
+        """
         player_index = leading_index
         trick = []
         for _ in range(4):
@@ -86,6 +101,10 @@ class Game:
         raise AssertionError('No one has the two of clubs. This should not happen.')
 
     def winning_index(self, trick):
+        """
+        Determine the index of the card that wins the trick.
+        trick is a list of four Cards, i.e. an entire trick.
+        """
         leading_suit = trick[0].suit
 
         result = 0
@@ -98,6 +117,9 @@ class Game:
         return result
 
     def count_points(self, cards):
+        """
+        Count the number of points in cards, where cards is a list of Cards.
+        """
         queen_of_spades = Card(Suit.spades, Rank.queen)
         result = 0
         for card in cards:
