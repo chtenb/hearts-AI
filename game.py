@@ -18,9 +18,9 @@ class Game:
         self._player_hands = tuple(deck.deal())
         self._cards_taken = ([], [], [], [])
 
-    def say(self, message):
+    def say(self, message, *formatargs):
         if self.verbose:
-            print(message)
+            print(message.format(*formatargs))
 
     def are_hearts_broken(self):
         """
@@ -53,10 +53,10 @@ class Game:
         # Print and return the results
         self.say('Results of this game:')
         for i in range(4):
-            self.say('Player {} got {} points from the cards {}'
-                     .format(i,
-                             self.count_points(self._cards_taken[i]),
-                             ' '.join(str(card) for card in self._cards_taken[i])),
+            self.say('Player {} got {} points from the cards {}',
+                     i,
+                     self.count_points(self._cards_taken[i]),
+                     ' '.join(str(card) for card in self._cards_taken[i])
                      )
 
         return tuple(self.count_points(self._cards_taken[i]) for i in range(4))
@@ -82,7 +82,7 @@ class Game:
 
         winning_index = self.winning_index(trick)
         winning_player_index = (leading_index + winning_index) % 4
-        self.say('Player {} won the trick {}.'.format(winning_player_index, trick))
+        self.say('Player {} won the trick {}.', winning_player_index, trick)
         self._cards_taken[winning_player_index].extend(trick)
         return winning_player_index
 
@@ -114,6 +114,7 @@ class Game:
         """
         Count the number of points in cards, where cards is a list of Cards.
         """
+        # TODO: implement "shoot the moon"
         queen_of_spades = Card(Suit.spades, Rank.queen)
         result = 0
         for card in cards:
