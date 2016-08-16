@@ -1,4 +1,5 @@
 from card import Suit, Rank, Card, Deck
+from rules import is_card_valid
 
 
 class Game:
@@ -30,14 +31,6 @@ class Game:
                 return True
         return False
 
-    def is_trick_valid(self, trick):
-        """
-        Return True if the given trick is a valid trick according to the rules of the game.
-        Return False otherwise.
-        """
-        # TODO: implement this
-        return True
-
     def play(self):
         """
         Simulate a single game and return a 4-tuple of the scores.
@@ -58,9 +51,9 @@ class Game:
             leading_index = self.play_trick(leading_index)
 
         # Print and return the results
-        self.say('Results:')
+        self.say('Results of this game:')
         for i in range(4):
-            self.say('Player {}: {} from {}'
+            self.say('Player {} got {} points from the cards {}'
                      .format(i,
                              self.count_points(self._cards_taken[i]),
                              ' '.join(str(card) for card in self._cards_taken[i])),
@@ -75,20 +68,21 @@ class Game:
         """
         player_index = leading_index
         trick = []
+        are_hearts_broken = self.are_hearts_broken()
         for _ in range(4):
-            played_card = self.players[player_index].play_card(
-                self._player_hands[player_index], trick, self.are_hearts_broken())
+            player = self.players[player_index]
+            player_hand = self._player_hands[player_index]
+            played_card = player.play_card(player_hand, trick, are_hearts_broken)
+            if not is_card_valid(player_hand, trick, played_card, are_hearts_broken):
+                raise ValueError('Player {} ({}) played an invalid card {} to the trick {}.'
+                                 .format(player_index, type(player).__name__, played_card, trick))
             trick.append(played_card)
-            if not self.is_trick_valid(trick):
-                raise ValueError('Player {} played an invalid card: {}. Resulting trick: {}'
-                                 .format(player_index, played_card, trick))
             self._player_hands[player_index].remove(played_card)
             player_index = (player_index + 1) % 4
 
-        self.say('Trick: {}'.format(trick))
         winning_index = self.winning_index(trick)
         winning_player_index = (leading_index + winning_index) % 4
-        self.say('Winning player: {}'.format(winning_player_index))
+        self.say('Player {} won the trick {}.'.format(winning_player_index, trick))
         self._cards_taken[winning_player_index].extend(trick)
         return winning_player_index
 

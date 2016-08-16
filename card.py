@@ -3,6 +3,7 @@ This module contains the definition of types fundamental to card games,
 most notably the type Card.
 """
 
+import sys
 from random import shuffle
 
 from orderedenum import OrderedEnum
@@ -16,13 +17,22 @@ class Suit(OrderedEnum):
     hearts = 4
 
     def __repr__(self):
-        # We assume cp437 or cp850 encoding
-        return {
-            1: chr(5),
-            2: chr(4),
-            3: chr(6),
-            4: chr(3)
-        }[self.value]
+        if sys.stdout.encoding in ['cp437', 'cp850']:
+            return {
+                # These are the correct unicode symbols in cp437 or cp850 encoding
+                # They don't work for 1252 of utf8
+                1: chr(5),
+                2: chr(4),
+                3: chr(6),
+                4: chr(3)
+            }[self.value]
+        else:
+            return {
+                1: ' of clubs',
+                2: ' of diamonds',
+                3: ' of spades',
+                4: ' of hearts',
+            }[self.value]
 
 
 class Rank(OrderedEnum):

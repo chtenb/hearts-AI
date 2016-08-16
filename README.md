@@ -1,10 +1,10 @@
 # hearts-AI
 
-## Running the code
+## Running the code on Windows
 Open any command line interface and type
 
 ```
-python main.py
+python -u main.py
 ```
 
 assuming that python is the name of your globally available python interpreter.
