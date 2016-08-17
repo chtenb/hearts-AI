@@ -1,5 +1,5 @@
 from card import Suit, Rank, Card, Deck
-from rules import is_card_valid
+from rules import is_card_valid, card_points
 
 
 class Game:
@@ -47,8 +47,8 @@ class Game:
 
         # Play the tricks
         leading_index = self.player_index_with_two_of_clubs()
-        for _ in range(13):
-            leading_index = self.play_trick(leading_index)
+        for trick_nr in range(13):
+            leading_index = self.play_trick(leading_index, trick_nr)
 
         # Print and return the results
         self.say('Results of this game:')
@@ -61,7 +61,7 @@ class Game:
 
         return tuple(self.count_points(self._cards_taken[i]) for i in range(4))
 
-    def play_trick(self, leading_index):
+    def play_trick(self, leading_index, trick_nr):
         """
         Simulate a single trick.
         leading_index contains the index of the player that must begin.
@@ -72,8 +72,8 @@ class Game:
         for _ in range(4):
             player = self.players[player_index]
             player_hand = self._player_hands[player_index]
-            played_card = player.play_card(player_hand, trick, are_hearts_broken)
-            if not is_card_valid(player_hand, trick, played_card, are_hearts_broken):
+            played_card = player.play_card(player_hand, trick, trick_nr, are_hearts_broken)
+            if not is_card_valid(player_hand, trick, played_card, trick_nr, are_hearts_broken):
                 raise ValueError('Player {} ({}) played an invalid card {} to the trick {}.'
                                  .format(player_index, type(player).__name__, played_card, trick))
             trick.append(played_card)
@@ -115,11 +115,4 @@ class Game:
         Count the number of points in cards, where cards is a list of Cards.
         """
         # TODO: implement "shoot the moon"
-        queen_of_spades = Card(Suit.spades, Rank.queen)
-        result = 0
-        for card in cards:
-            if card.suit == Suit.hearts:
-                result += 1
-            elif card == queen_of_spades:
-                result += 13
-        return result
+        return sum(card_points(card) for card in cards)

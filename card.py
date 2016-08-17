@@ -11,28 +11,18 @@ from orderedenum import OrderedEnum
 
 class Suit(OrderedEnum):
 
-    clubs = 1
-    diamonds = 2
-    spades = 3
-    hearts = 4
+    clubs = 0
+    diamonds = 1
+    spades = 2
+    hearts = 3
 
     def __repr__(self):
         if sys.stdout.encoding in ['cp437', 'cp850']:
-            return {
-                # These are the correct unicode symbols in cp437 or cp850 encoding
-                # They don't work for 1252 of utf8
-                1: chr(5),
-                2: chr(4),
-                3: chr(6),
-                4: chr(3)
-            }[self.value]
+            # These are the correct unicode symbols in cp437 or cp850 encoding
+            # They don't work for 1252 of utf8
+            return [chr(5), chr(4), chr(6), chr(3)][self.value]
         else:
-            return {
-                1: ' of clubs',
-                2: ' of diamonds',
-                3: ' of spades',
-                4: ' of hearts',
-            }[self.value]
+            return [' of clubs', ' of diamonds', ' of spades', ' of hearts'][self.value]
 
 
 class Rank(OrderedEnum):
@@ -55,12 +45,7 @@ class Rank(OrderedEnum):
         if self.value <= 10:
             return str(self.value)
         else:
-            return {
-                11: 'J',
-                12: 'Q',
-                13: 'K',
-                14: 'A'
-            }[self.value]
+            return ['J', 'Q', 'K', 'A'][self.value - 11]
 
 
 class Card:
@@ -82,11 +67,7 @@ class Card:
 class Deck:
 
     def __init__(self):
-        self.cards = []
-
-        for suit in Suit:
-            for rank in Rank:
-                self.cards.append(Card(suit, rank))
+        self.cards = [Card(suit, rank) for suit in Suit for rank in Rank]
 
     def deal(self):
         """
@@ -94,6 +75,4 @@ class Deck:
         """
         shuffle(self.cards)
         for i in range(0, 52, 13):
-            hand = self.cards[i:i + 13]
-            hand.sort()
-            yield hand
+            yield sorted(self.cards[i:i + 13])

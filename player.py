@@ -15,12 +15,13 @@ class Player:
         """Must return a list of three cards from the given hand."""
         return NotImplemented
 
-    def play_card(self, hand, trick, are_hearts_broken):
+    def play_card(self, hand, trick, trick_nr, are_hearts_broken):
         """
         Must return a card from the given hand.
         trick is a list of cards played so far.
         trick can thus have 0, 1, 2, or 3 elements.
         are_hearts_broken is a boolean indicating whether the hearts are broken yet.
+        trick_nr is an integer indicating the current trick number, starting with 0.
         """
         return NotImplemented
 
@@ -35,10 +36,10 @@ class StupidPlayer(Player):
     def pass_cards(self, hand):
         return hand[:3]
 
-    def play_card(self, hand, trick, are_hearts_broken):
+    def play_card(self, hand, trick, trick_nr, are_hearts_broken):
         # Play first card that is valid
         for card in hand:
-            if is_card_valid(hand, trick, card, are_hearts_broken):
+            if is_card_valid(hand, trick, card, trick_nr, are_hearts_broken):
                 return card
         raise AssertionError(
             'Apparently there is no valid card that can be played. This should not happen.'
@@ -75,7 +76,7 @@ class SimplePlayer(Player):
         hand.sort(key=self.undesirability, reverse=True)
         return hand[:3]
 
-    def play_card(self, hand, trick, are_hearts_broken):
+    def play_card(self, hand, trick, trick_nr, are_hearts_broken):
         # Lead with a low card
         if not trick:
             hand.sort(key=lambda card:
@@ -92,7 +93,7 @@ class SimplePlayer(Player):
         max_rank_in_leading_suit = max([card.rank for card in trick
                                         if card.suit == leading_suit])
         valid_cards = [card for card in hand
-                       if is_card_valid(hand, trick, card, are_hearts_broken)]
+                       if is_card_valid(hand, trick, card, trick_nr, are_hearts_broken)]
         safe_cards = [card for card in valid_cards
                       if card.suit != leading_suit or card.rank <= max_rank_in_leading_suit]
 
