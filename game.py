@@ -80,6 +80,9 @@ class Game:
             self._player_hands[player_index].remove(played_card)
             player_index = (player_index + 1) % 4
 
+        for player in self.players:
+            player.see_played_trick(trick, trick_nr)
+
         winning_index = self.winning_index(trick)
         winning_player_index = (leading_index + winning_index) % 4
         self.say('Player {} won the trick {}.', winning_player_index, trick)

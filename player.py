@@ -25,6 +25,13 @@ class Player:
         """
         return NotImplemented
 
+    def see_played_trick(self, trick, trick_nr):
+        """
+        Allows the player to have a look at all four cards in the trick being played.
+        """
+        pass
+
+
 
 class StupidPlayer(Player):
 
